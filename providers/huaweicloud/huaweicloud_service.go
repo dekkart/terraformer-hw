@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package ct
+package huaweicloud
 
 import (
 	"github.com/GoogleCloudPlatform/terraformer/terraformutils"
 )
 
-type CTService struct { //nolint
+type HuaweiCloudService struct { //nolint
 	terraformutils.Service
 }

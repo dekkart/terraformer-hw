@@ -123,8 +123,8 @@ func (g *ECSGenerator) createResources(instances *[]ecsModel.ServerDetail) []ter
 		resources = append(resources, terraformutils.NewSimpleResource(
 			instance.Id,
 			instance.Name,
-			"sbercloud_compute_instance",
-			"sbercloud",
+			"huaweicloud_compute_instance",
+			"huaweicloud",
 			[]string{}))
 	}
 	return resources

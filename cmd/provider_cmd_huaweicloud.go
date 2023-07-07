@@ -24,7 +24,7 @@ import (
 
 func newCmdHuaweiCloudImporter(options ImportOptions) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "Huawei Cloud",
+		Use:   "huaweicloud",
 		Short: "Import current state to Terraform configuration from Huawei Cloud",
 		Long:  "Import current state to Terraform configuration from Huawei Cloud",
 		RunE: func(cmd *cobra.Command, args []string) error {

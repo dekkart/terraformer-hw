@@ -125,8 +125,8 @@ func (g *EVSGenerator) createResources(instances *[]evsModel.VolumeDetail) []ter
 		resources = append(resources, terraformutils.NewSimpleResource(
 			instance.Id,
 			instance.Name,
-			"sbercloud_evs_volume",
-			"sbercloud",
+			"huaweicloud_evs_volume",
+			"huaweicloud",
 			[]string{}))
 	}
 	return resources
