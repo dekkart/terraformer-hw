@@ -396,12 +396,9 @@ require (
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/redis v1.0.392
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/scf v1.0.392
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/ses v1.0.392
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/sms v1.0.392
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/ssl v1.0.392
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/tat v1.0.392
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/tcaplusdb v1.0.392
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/tem v1.0.392
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/vod v1.0.392
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/vpc v1.0.392
 )
 
