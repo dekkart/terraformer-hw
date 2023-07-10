@@ -90,12 +90,13 @@ func (p *HuaweiCloudProvider) GetSupportedService() map[string]terraformutils.Se
 /*
 func (p *HuaweiCloudProvider) GetConfig() cty.Value {
 	return cty.ObjectVal(map[string]cty.Value{
-		//	"AccessKey": cty.StringVal(p.AK),
-		//	"SecretKey": cty.StringVal(p.SK),
-		"region": cty.StringVal(p.Region),
+		"AccessKey": cty.StringVal(p.AK),
+		"SecretKey": cty.StringVal(p.SK),
+		"Region":    cty.StringVal(p.Region),
 	})
 }
 */
+
 func (p *HuaweiCloudProvider) InitService(serviceName string, verbose bool) error {
 	var isSupported bool
 
