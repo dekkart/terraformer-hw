@@ -41,7 +41,7 @@ func newCmdHuaweiCloudImporter(options ImportOptions) *cobra.Command {
 	}
 
 	cmd.AddCommand(listCmd(newHuaweiCloudProvider()))
-	baseProviderFlags(cmd.PersistentFlags(), &options, "ecs, evs", "")
+	baseProviderFlags(cmd.PersistentFlags(), &options, "ecs, evs, sg", "")
 
 	return cmd
 }
