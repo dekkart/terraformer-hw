@@ -20,15 +20,14 @@ import (
 	"os"
 
 	"github.com/GoogleCloudPlatform/terraformer/terraformutils"
-	"github.com/zclconf/go-cty/cty"
 )
 
-// AK & SK will be got from env on init()
+// AK & SK will be set from ENV
 const AK = "AK"
 const SK = "SK"
 
-// Default region
-const Region = "ru-moscow-1"
+// Default region is Honk Kong (if not set in ENV)
+const Region = "ap-southeast-1"
 
 type HuaweiCloudProvider struct { //nolint
 	terraformutils.Provider
@@ -38,22 +37,26 @@ type HuaweiCloudProvider struct { //nolint
 }
 
 func (p *HuaweiCloudProvider) Init(args []string) error {
-	if SBC_ACCESS_KEY, ok := os.LookupEnv("SBC_ACCESS_KEY"); ok {
-		p.AK = SBC_ACCESS_KEY
-		log.Println("SBC_ACCESS_KEY: ", p.AK)
+	if HW_ACCESS_KEY, ok := os.LookupEnv("HW_ACCESS_KEY"); ok {
+		p.AK = HW_ACCESS_KEY
+		log.Println("HW_ACCESS_KEY: ", p.AK)
 	} else {
-		log.Printf("%s not set\n", SBC_ACCESS_KEY)
+		log.Printf("%s not set\n", HW_ACCESS_KEY)
 	}
-	//p.AK = os.Getenv("SBC_ACCESS_KEY")
-	if SBC_SECRET_KEY, ok := os.LookupEnv("SBC_SECRET_KEY"); ok {
-		p.SK = SBC_SECRET_KEY
-		log.Println("SBC_SECRET_KEY: ", p.SK)
+	if HW_SECRET_KEY, ok := os.LookupEnv("HW_SECRET_KEY"); ok {
+		p.SK = HW_SECRET_KEY
+		log.Println("HW_SECRET_KEY: ", p.SK)
 	} else {
-		log.Printf("%s not set\n", SBC_SECRET_KEY)
+		log.Printf("%s not set\n", HW_SECRET_KEY)
 	}
-	//p.SK = os.Getenv("SBC_SECRET_KEY")
-	p.Region = Region
-	log.Println("Region: ", p.Region)
+
+	if HW_REGION_NAME, ok := os.LookupEnv("HW_REGION_NAME"); ok {
+		p.Region = HW_REGION_NAME
+		log.Println("HW_REGION_NAME: ", p.Region)
+	} else {
+		log.Printf("%s not set\n", HW_REGION_NAME)
+	}
+
 	if p.AK == "" || p.SK == "" {
 		panic("AK or SK not set in ENV variables, please set up env")
 	}
@@ -84,6 +87,7 @@ func (p *HuaweiCloudProvider) GetSupportedService() map[string]terraformutils.Se
 }
 
 // Configure provider:
+/*
 func (p *HuaweiCloudProvider) GetConfig() cty.Value {
 	return cty.ObjectVal(map[string]cty.Value{
 		//	"AccessKey": cty.StringVal(p.AK),
@@ -91,7 +95,7 @@ func (p *HuaweiCloudProvider) GetConfig() cty.Value {
 		"region": cty.StringVal(p.Region),
 	})
 }
-
+*/
 func (p *HuaweiCloudProvider) InitService(serviceName string, verbose bool) error {
 	var isSupported bool
 

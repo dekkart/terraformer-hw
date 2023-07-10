@@ -43,7 +43,7 @@ func (g *ECSGenerator) loadInstances() (*[]ecsModel.ServerDetail, error) {
 		// If ProjectId is not filled in, the SDK will automatically call the IAM service to query the project id corresponding to the region.
 		//	WithProjectId("ru-moscow-1").
 		// Configure the SDK built-in IAM service endpoint, default is https://iam.myhuaweicloud.com
-		WithIamEndpointOverride("https://iam.ru-moscow-1.hc.sbercloud.ru/v3").
+		//WithIamEndpointOverride("https://iam.ru-moscow-1.hc.sbercloud.ru/v3").
 		Build()
 
 	// Use default configuration
@@ -81,7 +81,7 @@ func (g *ECSGenerator) loadInstances() (*[]ecsModel.ServerDetail, error) {
 	// Create a request
 	request := &ecsModel.ListServersDetailsRequest{}
 	// Configure the number of records (Servers) on each page
-	limit := int32(100)
+	limit := int32(defaultPageSize)
 	request.Limit = &limit
 
 	// Send the request and get the response
