@@ -67,13 +67,21 @@ func OutputHclFiles(resources []terraformutils.Resource, provider terraformutils
 		}
 		for _, v := range provider.GetResourceConnections() {
 			for k, ids := range v {
+				//Dekkart:
+				log.Println("[Dekkart: ]k, ids: ", k, ids)
+				log.Println("[Dekkart: ]serviceName, r.ServiceName: ", serviceName, r.ServiceName())
 				if (serviceName != "" && k == serviceName) || (serviceName == "" && k == r.ServiceName()) {
+					//Dekkart:
+					log.Println("[Dekkart: ] r.InstanceState.Attribute: ", r.InstanceState.Attributes)
+					log.Println("[Dekkart: ] r.InstanceState.Attribute[ids[1]]: ", r.InstanceState.Attributes[ids[1]])
 					if _, exist := r.InstanceState.Attributes[ids[1]]; exist {
+
 						key := ids[1]
 						if ids[1] == "self_link" || ids[1] == "id" {
 							key = r.GetIDKey()
 						}
 						linkKey := r.InstanceInfo.Type + "_" + r.ResourceName + "_" + key
+						log.Println("[Dekkart: ] linkKey: ", linkKey)
 						outputsByResource[linkKey] = map[string]interface{}{
 							"value": "${" + r.InstanceInfo.Type + "." + r.ResourceName + "." + key + "}",
 						}
@@ -81,6 +89,7 @@ func OutputHclFiles(resources []terraformutils.Resource, provider terraformutils
 							Type:  "string",
 							Value: r.InstanceState.Attributes[ids[1]],
 						}
+						log.Println("[Dekkart: ] outputState[linkKey]: ", outputState[linkKey])
 					}
 				}
 			}
