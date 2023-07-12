@@ -16,7 +16,6 @@ package huaweicloud
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/GoogleCloudPlatform/terraformer/terraformutils"
 	"github.com/huaweicloud/huaweicloud-sdk-go-v3/core/auth/basic"
@@ -121,40 +120,12 @@ func (g *ECSGenerator) createResources(instances *[]ecsModel.ServerDetail) []ter
 	fmt.Println("createResources")
 	var resources []terraformutils.Resource
 	for _, instance := range *instances {
-		resources = append(resources, terraformutils.NewResource(
+		resources = append(resources, terraformutils.NewSimpleResource(
 			instance.Id,
 			instance.Name,
 			"huaweicloud_compute_instance",
 			"huaweicloud",
-			map[string]string{},
-			[]string{},
-			map[string]interface{}{},
-		))
+			[]string{}))
 	}
 	return resources
-}
-
-func (g *ECSGenerator) PostConvertHook() error {
-	for _, r := range g.Resources {
-		log.Println("r.InstanceInfo: ", r.InstanceInfo)
-		log.Println("r.InstanceState.Attributes: ", r.InstanceState.Attributes)
-		log.Println("r.Item: ", r.Item)
-		log.Println("r.Outputs: ", r.Outputs)
-
-		// Удалить security group
-		/*
-			if r.InstanceInfo.Type != "huaweicloud_compute_instance" {
-				continue
-			}
-			rootDeviceVolumeType := r.InstanceState.Attributes["root_block_device.0.volume_type"]
-			if !(rootDeviceVolumeType == "io1" || rootDeviceVolumeType == "io2" || rootDeviceVolumeType == "gp3") {
-				delete(r.Item["root_block_device"].([]interface{})[0].(map[string]interface{}), "iops")
-			}
-			if rootDeviceVolumeType != "gp3" {
-				delete(r.Item["root_block_device"].([]interface{})[0].(map[string]interface{}), "throughput")
-			}
-		*/
-	}
-
-	return nil
 }
