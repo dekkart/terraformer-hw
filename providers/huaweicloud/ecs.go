@@ -140,7 +140,7 @@ func (g *ECSGenerator) PostConvertHook() error {
 		log.Println("r.InstanceState.Attributes: ", r.InstanceState.Attributes)
 		log.Println("r.Item: ", r.Item)
 		log.Println("r.Outputs: ", r.Outputs)
-
+		//
 		// Удалить security group
 		/*
 			if r.InstanceInfo.Type != "huaweicloud_compute_instance" {
