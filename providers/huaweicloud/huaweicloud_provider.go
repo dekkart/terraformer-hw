@@ -75,14 +75,22 @@ func (p *HuaweiCloudProvider) GetProviderData(arg ...string) map[string]interfac
 }
 
 func (HuaweiCloudProvider) GetResourceConnections() map[string]map[string][]string {
-	return map[string]map[string][]string{}
+	log.Println("Get Resourse Connection:")
+	return map[string]map[string][]string{
+		"compute_instance": {
+			"vpc_subnet": []string{
+				"uuid", "id",
+			},
+		},
+	}
 }
 
 func (p *HuaweiCloudProvider) GetSupportedService() map[string]terraformutils.ServiceGenerator {
 	return map[string]terraformutils.ServiceGenerator{
-		"evs": &EVSGenerator{},
-		// InstanceGenerator подтягивается автоматом из пакета:
-		"ecs": &ECSGenerator{},
+		"evs":    &EVSGenerator{},
+		"ecs":    &ECSGenerator{},
+		"sg":     &SGGenerator{},
+		"subnet": &SubnetGenerator{},
 	}
 }
 

@@ -22,21 +22,22 @@ import (
 	"github.com/huaweicloud/huaweicloud-sdk-go-v3/core/auth/basic"
 	"github.com/huaweicloud/huaweicloud-sdk-go-v3/core/config"
 	"github.com/huaweicloud/huaweicloud-sdk-go-v3/core/httphandler"
-	ecs "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/ecs/v2"
-	ecsModel "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/ecs/v2/model"
-	ecsRegion "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/ecs/v2/region"
+
+	vpc "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/vpc/v2"
+	vpcModel "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/vpc/v2/model"
+	vpcRegion "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/vpc/v2/region"
 )
 
-type ECSGenerator struct {
+type SubnetGenerator struct {
 	HuaweiCloudService
 }
 
-func (g *ECSGenerator) loadInstances() (*[]ecsModel.ServerDetail, error) {
+func (g *SubnetGenerator) loadSubnets() (*[]vpcModel.Subnet, error) {
 	AK := g.Args["AK"].(string)
 	SK := g.Args["SK"].(string)
 	Region := g.Args["Region"].(string)
-	fmt.Println("Load instances")
-	// Добавить цикл для count если серверов много
+	log.Println("Load Subnets")
+	// Добавить цикл для count если SG больше 1000
 	auth := basic.NewCredentialsBuilder().
 		// Access Key and Secret Access Key used for authentication
 		WithAk(AK).
@@ -65,12 +66,12 @@ func (g *ECSGenerator) loadInstances() (*[]ecsModel.ServerDetail, error) {
 	httpConfig.WithHttpHandler(httpHandler)
 
 	// Create a service client
-	client := ecs.NewEcsClient(
-		ecs.EcsClientBuilder().
+	client := vpc.NewVpcClient(
+		vpc.VpcClientBuilder().
 			// Enpoint will be added automaticly from ~/.huaweicloud/regions.yaml
 			//WithEndpoint("https://ecs.ru-moscow-1.hc.sbercloud.ru").
 			// Configure region, it will cause a panic if the region does not exist
-			WithRegion(ecsRegion.ValueOf(Region)).
+			WithRegion(vpcRegion.ValueOf(Region)).
 			// Configure authentication
 			WithCredential(auth).
 
@@ -80,34 +81,34 @@ func (g *ECSGenerator) loadInstances() (*[]ecsModel.ServerDetail, error) {
 			Build())
 
 	// Create a request
-	request := &ecsModel.ListServersDetailsRequest{}
-	// Configure the number of records (Servers) on each page
+	request := &vpcModel.ListSubnetsRequest{}
+	// Configure the number of records on each page
 	limit := int32(defaultPageSize)
 	request.Limit = &limit
 
 	// Send the request and get the response
-	response, err := client.ListServersDetails(request)
+	// List up to 1000 SG now, will change later
+	response, err := client.ListSubnets(request)
 	// Handle error and print response
 	if err == nil {
 		//fmt.Printf("%+v\n", response.Count)
-		fmt.Println(*response.Count)
+		log.Println("Subnets info: ", *response.Subnets)
 	} else {
 		fmt.Println(err)
 	}
-	data := *response.Servers
+	data := *response.Subnets
 	for i, s := range data {
-		fmt.Println(i, s.Id)
-		//instances = append(instances, &s...)
+		log.Println(i, s.Id)
 	}
 
-	return response.Servers, nil
+	return response.Subnets, nil
 
 }
 
-// InitResources Gets the list of all ECS instance ids and generates resources
-func (g *ECSGenerator) InitResources() error {
-	fmt.Println("InitResources")
-	result, err := g.loadInstances()
+// InitResources Gets the list of all Security Groups ids and generates resources
+func (g *SubnetGenerator) InitResources() error {
+	log.Println("Init Subnets")
+	result, err := g.loadSubnets()
 	if err != nil {
 		return err
 	}
@@ -117,44 +118,16 @@ func (g *ECSGenerator) InitResources() error {
 }
 
 // Генерация ресурсов в HCL
-func (g *ECSGenerator) createResources(instances *[]ecsModel.ServerDetail) []terraformutils.Resource {
-	fmt.Println("createResources")
+func (g *SubnetGenerator) createResources(Subnets *[]vpcModel.Subnet) []terraformutils.Resource {
+	log.Println("create security groups")
 	var resources []terraformutils.Resource
-	for _, instance := range *instances {
-		resources = append(resources, terraformutils.NewResource(
-			instance.Id,
-			instance.Name,
-			"huaweicloud_compute_instance",
+	for _, subnet := range *Subnets {
+		resources = append(resources, terraformutils.NewSimpleResource(
+			subnet.Id,
+			subnet.Name,
+			"huaweicloud_vpc_subnet",
 			"huaweicloud",
-			map[string]string{},
-			[]string{},
-			map[string]interface{}{},
-		))
+			[]string{}))
 	}
 	return resources
-}
-
-func (g *ECSGenerator) PostConvertHook() error {
-	for _, r := range g.Resources {
-		log.Println("r.InstanceInfo: ", r.InstanceInfo)
-		log.Println("r.InstanceState.Attributes: ", r.InstanceState.Attributes)
-		log.Println("r.Item: ", r.Item)
-		log.Println("r.Outputs: ", r.Outputs)
-
-		// Удалить security group
-		/*
-			if r.InstanceInfo.Type != "huaweicloud_compute_instance" {
-				continue
-			}
-			rootDeviceVolumeType := r.InstanceState.Attributes["root_block_device.0.volume_type"]
-			if !(rootDeviceVolumeType == "io1" || rootDeviceVolumeType == "io2" || rootDeviceVolumeType == "gp3") {
-				delete(r.Item["root_block_device"].([]interface{})[0].(map[string]interface{}), "iops")
-			}
-			if rootDeviceVolumeType != "gp3" {
-				delete(r.Item["root_block_device"].([]interface{})[0].(map[string]interface{}), "throughput")
-			}
-		*/
-	}
-
-	return nil
 }
